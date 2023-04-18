@@ -157,6 +157,17 @@ conv_dolly = Conversation(
     sep2="### End",
 )
 
+conv_gpt_neoxt = Conversation(
+    system="A chat between a curious user and an artificial intelligence bot. "
+           "The bot gives helpful, detailed, and polite answers to the user's questions.",
+    roles=("<human>", "<bot>"),
+    messages=(),
+    offset=0,
+    sep_style=SeparatorStyle.TWO,
+    sep="\n",
+    sep2="</s>",
+)
+
 conv_templates = {
     "conv_one_shot": conv_one_shot,
     "vicuna_v1.1": conv_vicuna_v1_1,
@@ -173,6 +184,8 @@ def get_default_conv_template(model_name):
         return conv_koala_v1
     elif "dolly" in model_name:
         return conv_dolly
+    elif "gpt_neoxt" in model_name:
+        return conv_gpt_neoxt
     return conv_one_shot
 
 
