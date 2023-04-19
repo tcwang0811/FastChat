@@ -110,12 +110,14 @@ def preprocess(
     assert conv.sep_style == SeparatorStyle.TWO
 
     # Mask targets
+    sep2_len = len(tokenizer(conv.sep2).input_ids)
     sep = conv.sep + conv.roles[1] + ": "
     for conversation, target in zip(conversations, targets):
         total_len = int(target.ne(tokenizer.pad_token_id).sum())
 
         rounds = conversation.split(conv.sep2)
-        cur_len = 1
+        cur_len = 0
+        is_first_round = True
         for i, rou in enumerate(rounds):
             if rou == "":
                 break
@@ -124,14 +126,15 @@ def preprocess(
             if len(parts) != 2:
                 break
             parts[0] += sep
-            round_len = len(tokenizer(rou).input_ids)
-            instruction_len = len(tokenizer(parts[0]).input_ids) - 2
+            round_len = len(tokenizer(rou).input_ids) + sep2_len
+            instruction_len = len(tokenizer(parts[0]).input_ids) - 1
 
-            target[cur_len:cur_len+instruction_len] = (
-                IGNORE_TOKEN_ID)
-
+            if is_first_round:
+                target[cur_len:(cur_len+instruction_len)] = (IGNORE_TOKEN_ID)
+            else:
+                target[(cur_len-sep2_len):(cur_len+instruction_len)] = (IGNORE_TOKEN_ID)
             #rank0_print(tokenizer.decode(target[cur_len+instruction_len:cur_len+round_len]))
-
+            is_first_round = False
             cur_len += round_len
         target[cur_len:] = IGNORE_TOKEN_ID
 
