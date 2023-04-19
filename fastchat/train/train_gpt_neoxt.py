@@ -117,7 +117,6 @@ def preprocess(
 
         rounds = conversation.split(conv.sep2)
         cur_len = 0
-        is_first_round = True
         for i, rou in enumerate(rounds):
             if rou == "":
                 break
@@ -129,12 +128,8 @@ def preprocess(
             round_len = len(tokenizer(rou).input_ids) + sep2_len
             instruction_len = len(tokenizer(parts[0]).input_ids) - 1
 
-            if is_first_round:
-                target[cur_len:(cur_len+instruction_len)] = (IGNORE_TOKEN_ID)
-            else:
-                target[(cur_len-sep2_len):(cur_len+instruction_len)] = (IGNORE_TOKEN_ID)
+            target[cur_len:(cur_len+instruction_len)] = (IGNORE_TOKEN_ID)
             #rank0_print(tokenizer.decode(target[cur_len+instruction_len:cur_len+round_len]))
-            is_first_round = False
             cur_len += round_len
         target[cur_len:] = IGNORE_TOKEN_ID
 
