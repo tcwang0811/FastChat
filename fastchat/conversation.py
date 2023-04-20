@@ -165,7 +165,7 @@ conv_gpt_neoxt = Conversation(
     offset=0,
     sep_style=SeparatorStyle.TWO,
     sep="\n",
-    sep2="</s>",
+    sep2="#|im_end|#",
 )
 
 conv_templates = {
